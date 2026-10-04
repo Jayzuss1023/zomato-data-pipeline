@@ -1,0 +1,19 @@
+[project]
+name = "zomato-data-pipeline"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jayzuss1023", email = "jesus.flo369@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-snowflake>=1.12.1",
+]
+
+[project.scripts]
+zomato-data-pipeline = "zomato_data_pipeline:main"
+
+[build-system]
+requires = ["uv_build>=0.12.2,<0.13.0"]
+build-backend = "uv_build"

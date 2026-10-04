@@ -18,9 +18,11 @@ CREATE OR REPLACE FILE FORMAT ZOMATOR.RAW.CSV_FMT
                                             -- trailing field) NULL-fill instead of aborting
 
 
+-- Create a stage - stages are named locations that give access to files on Snowflake
 CREATE OR REPLACE STAGE ZOMATO.RAW.ZOMATO_RAW_STAGE
-    STORAGE_INTEGRATION ZOMATO_S3_INT
+    STORAGE_INTEGRATION = ZOMATO_S3_INT
     URL = 's3://<BUCKET>/raw/'
     FILE_FORMAT = ZOMATO.RAW.CSV_FMT;
 
+-- Confirm Snowflake can see your files (should list the seven table folders).
 LIST @ZOMATO.RAW.ZOMATO_RAW_STAGE
