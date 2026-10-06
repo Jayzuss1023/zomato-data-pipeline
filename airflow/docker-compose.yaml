@@ -1,8 +1,8 @@
 x-airflow-common: &airflow-common
-  build:
-  environment: &airflow-environment
+  build: .
+  environment: &airflow-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW_DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__CORE__FERNET_KEY: ""
@@ -17,7 +17,7 @@ x-airflow-common: &airflow-common
     SNOWFLAKE_PASSWORD: ${SNOWFLAKE_PASSWORD}
     OPENAI_API_KEY: ${OPENAI_API_KEY}
     SAMPLE_N: ${SAMPLE_N:-5}
-    AIRFLOW_CON_SNOWFLAKE_DEFAULT: '{"conn_type":"snowflake","login":"${SNOWFLAKE_USER}","password":"${SNOWFLAKE_PASSWORD}","schema":"RAW","extra":{"account":"${SNOWFLAKE_ACCOUNT}","warehouse":"ZOMATO_WH","database":"ZOMATO","role":"DBT_ROLE"}}'
+    AIRFLOW_CONN_SNOWFLAKE_DEFAULT: '{"conn_type":"snowflake","login":"${SNOWFLAKE_USER}","password":"${SNOWFLAKE_PASSWORD}","schema":"RAW","extra":{"account":"${SNOWFLAKE_ACCOUNT}","warehouse":"ZOMATO_WH","database":"ZOMATO","role":"DBT_ROLE"}}'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs

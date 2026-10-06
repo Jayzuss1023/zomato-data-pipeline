@@ -1,0 +1,13 @@
+zomato:
+  outputs:
+    dev:
+      account: NVFWKWH-NJ73424
+      database: ZOMATO
+      password: Oliverrox_1023
+      role: DBT_ROLE
+      schema: STAGING
+      threads: 8
+      type: snowflake
+      user: JESUSFLO
+      warehouse: ZOMATO_WH
+  target: dev
