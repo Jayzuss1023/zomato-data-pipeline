@@ -8,7 +8,7 @@ load_dotenv()
 
 MODEL = 'gpt-4o-mini'
 
-SAMPLE_N = 5
+SAMPLE_N = int(os.getenv("SAMPLE_N", "5"))
 TOPICS = ['food quality', 'delivery', 'pricing', 'service', 'packaging', 'other']
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -24,7 +24,7 @@ For the review you are given, return:
 Reply as JSON in this extract format:
 {{
     "sentiment_label": "<sentiment_label>",
-    "sentiment_score": "<sentiment_score>",
+    "sentiment_score": 0.8,
     "topic": "<topic>",
     "key_issue": "<key_issue>"
 }} 
@@ -56,7 +56,7 @@ def create_output_table(cursor):
         )
     """)
 
-# Select review ids and comments from ZOMATO.RAW.REVIEWS that are not already in the enriched table, limited to SAMPLE_N (5)
+# Select review ids and comments from ZOMATO.RAW.REVIEWS that are not already in the enriched table, limited to SAMPLE_N
 def get_reviews_to_enrich(cursor):
     cursor.execute(f"""
         SELECT REVIEW_ID, COMMENT
@@ -64,6 +64,7 @@ def get_reviews_to_enrich(cursor):
         WHERE REVIEW_ID NOT IN (SELECT REVIEW_ID FROM ZOMATO.AI.REVIEW_ENRICHED)
         LIMIT {SAMPLE_N}
     """)
+    return cursor.fetchall()
 
 # Send one review comment to gpt-4o-mini with the system prompt and returns the parsed JSON
 def classify_review(comment):
@@ -81,13 +82,11 @@ def classify_review(comment):
 
 # Bulk insert the classified rows into Snowflake, including which model produced them
 def save_results(cursor, results):
-    """
-        Insert all the enriched rows into Snowflake in one go.
-    """
+    """Insert all the enriched rows into Snowflake in one go"""
     print(f"Saving {len(results)} enriched reviews to Snowflake...")
-    cursor.executmany(
+    cursor.executemany(
         """
-            INSERT INTO ZOMATO.AI.REVIEWS_ENRICHED
+            INSERT INTO ZOMATO.AI.REVIEW_ENRICHED
                 (review_id, sentiment_label, sentiment_score, topic, key_issue, model)
             VALUES(%s, %s, %s, %s, %s, %s)
         """,
@@ -118,7 +117,7 @@ def main():
             results.append((
                 review_id,
                 labels["sentiment_label"],
-                labels["sentiment_score"],
+                float(labels["sentiment_score"]),
                 labels["topic"],
                 labels["key_issue"],
                 MODEL
@@ -126,11 +125,11 @@ def main():
         except Exception as e:
             print(f"Error occurred while classifying review {review_id}: {e}")
         
-        save_results(cursor, results)
-        print(f"Saved {len(results)} enriched reviews to Snowflake")
-        conn.commit()
-        cursor.close()
-        conn.close()
+    save_results(cursor, results)
+    print(f"Saved {len(results)} enriched reviews to Snowflake")
+    conn.commit()
+    cursor.close()
+    conn.close()
     
 if __name__ == "__main__":
     main()
