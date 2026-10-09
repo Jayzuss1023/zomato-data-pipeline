@@ -9,7 +9,7 @@ import snowflake.connector
 load_dotenv()
 
 EMBEDDING_MODEL = "text-embedding-3-small"
-CHAT_MODEL = "gpt-40-mini"
+CHAT_MODEL = "gpt-4o-mini"
 NEW_REVIEWS = 500
 TOK_K = 5
 CACHE_FILE = "review_embeddings.parquet"
@@ -34,7 +34,7 @@ def read_reviews_from_snowflake():
         SAMPLE ({NEW_REVIEWS} ROWS)
     """
 
-    df = conn.cursor.execute(query).fetch_pandas_all()
+    df = conn.cursor().execute(query).fetch_pandas_all()
     conn.close()
 
     df.columns = [col.lower() for col in df.columns]
@@ -50,8 +50,7 @@ def embed(texts):
 
     return [item.embedding for item in response.data]
 
-st.cache_data()
-
+@st.cache_data()
 # If path not exist, fetch reviews from Snowflake, create embedding column and embed each comment
 # CACHE_FILE keeps Snowflake and the embedding call to only run the first time
 def load_reviews():
@@ -82,7 +81,7 @@ def find_similar_reviews(question, df):
     for review_vector in df['embedding']:
         scores.append(consine_simiarity(question_vector, review_vector))
 
-    df.copy()
+    df = df.copy()
     df['score'] = scores
     return df.nlargest(TOK_K, 'score')
 
@@ -92,14 +91,14 @@ def ask_llm(question, top_reviews):
     context = ""
 
     for _, row in top_reviews.iterrows():
-        context += f" ({row['city']}, {row['rating']} stars) {row['commnet']}\n"
+        context += f" ({row['city']}, {row['rating']} stars) {row['comment']}\n"
 
     system_prompt = (
         "Answer ONLY using the customer reviews provided. "
         "Be concise. If the reviews don't covert it, say so"
     )
 
-    user_prompt = f"Questions: {question}\n\Reviews:\n{context}"
+    user_prompt = f"Questions: {question}\n\nReviews:\n{context}"
 
     response = client.chat.completions.create(
         model=CHAT_MODEL,
