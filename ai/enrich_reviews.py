@@ -113,7 +113,7 @@ def main():
         print(f"Classifying review {review_id}: {comment}")
         try:
             labels = classify_review(comment)
-            print(f"Lavels for review {review_id}: {labels}")
+            print(f"Labels for review {review_id}: {labels}")
             results.append((
                 review_id,
                 labels["sentiment_label"],
