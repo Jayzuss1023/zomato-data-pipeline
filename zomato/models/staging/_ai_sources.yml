@@ -1,0 +1,14 @@
+# _ai.sources.yml points at ZOMATO.AI.review_enriched, the table written by ai/enrich_reviews.py with sentiment, topic, and key issue per review.
+# mart_review_insights.sql reads it with source('ai', 'review_enriched'). dbt loads every YAML file under models/,
+# so this source can live in the staging folder even though the model that uses it is in marts.
+
+version: 2
+
+sources:
+  - name: ai
+    database: ZOMATO
+    schema: AI
+    description: "LLM-enriched tabled produced by ai/enrich_reviews.py (OpenAI)."
+    tables:
+      - name: review_enriched
+        description: "Per-review sentiment + topic + key issue from the LLM."

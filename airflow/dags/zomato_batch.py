@@ -55,5 +55,9 @@ with DAG(
     # """
     # # build the dbt models that depend on the enrichment script produced
     # """
+    dbt_build_ai = BashOperator(
+        task_id = 'dbt_build_ai',
+        bash_command=f"{DBT} build --select tag:ai --project-dir {DBT_PROJECT} --profiles-dir {DBT_PROJECT}"
+    )
 
-    reload_raw >> dbt_build_core >> enrich_reviews
+    reload_raw >> dbt_build_core >> enrich_reviews >> dbt_build_ai

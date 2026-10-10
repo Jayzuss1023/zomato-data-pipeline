@@ -1,3 +1,7 @@
+# _sources.yml declares the raw landing tables in Snowflake (ZOMATO.RAW). Staging SQL files read them with source('raw', 'reviews')
+# and the other table names listed there: restaurants, users, food, menu, orders, order_items, and reviews.
+# dbt uses that declaration so models never hardcode the database and schema.
+
 sources:
   - name: raw
     database: zomato

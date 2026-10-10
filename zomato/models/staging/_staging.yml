@@ -1,5 +1,5 @@
 # dbt properties file for the staging models
-#  It doesn't create any tables. It holds metadata and data-quality tests for the models in zomato/models/staging/
+# It doesn't create any tables. It holds metadata and data-quality tests for the models in zomato/models/staging/
 # Each test transforms into an SQL query which will run against Snowflake
 # unique and order_id fails if any order ID appears twice
 # not_null fails if any row has a null value
