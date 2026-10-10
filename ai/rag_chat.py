@@ -30,7 +30,7 @@ def read_reviews_from_snowflake():
 
     query = f"""
         SELECT REVIEW_ID, CITY, RATING, COMMENT
-        FROM ZOMATO.STAGING.STG_REVIEWS
+        FROM ZOMATO.STAGING_STAGING.STG_REVIEWS
         SAMPLE ({NEW_REVIEWS} ROWS)
     """
 

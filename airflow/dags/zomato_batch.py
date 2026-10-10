@@ -52,12 +52,8 @@ with DAG(
         task_id="enrich_reviews",
         bash_command="python /opt/airflow/ai/enrich_reviews.py"
     )
-    """
-    # build the dbt models that depend on the enrichment script produced
-    """
-    dbt_build_ai = BashOperator(
-        task_id = "dbt_build_ai",
-        bash_command=f"{DBT} build --select tag:ai --project-dir {DBT_PROJECT} --profiles-dir {DBT_PROJECT}"
-    )
+    # """
+    # # build the dbt models that depend on the enrichment script produced
+    # """
 
-    reload_raw >> dbt_build_core >> enrich_reviews >> dbt_build_ai
+    reload_raw >> dbt_build_core >> enrich_reviews
